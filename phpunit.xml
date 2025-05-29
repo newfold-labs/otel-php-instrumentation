@@ -1,0 +1,9 @@
+<phpunit>
+  <bootstrap>vendor/autoload.php</bootstrap>
+  <php>
+    <ini name="zend.assertions" value="-1"/>
+  </php>
+  <mock-objects>
+    <mock-final-classes enabled="true"/>
+  </mock-objects>
+</phpunit>
