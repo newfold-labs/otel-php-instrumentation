@@ -7,7 +7,7 @@ use NewfoldLabs\CustomPhp\Instrumentation\CustomPhpInstrumentation;
 /**
  * Bootstrap File
  *
- * Initializes OpenTelemetry auto-instrumentation for WordPress using custom PHP logic.
+ * Initializes OpenTelemetry auto-instrumentation for Custom PHP.
  * Ensures the required OpenTelemetry extension is loaded before proceeding.
  *
  * @package NewfoldLabs\CustomPhp\Instrumentation
@@ -17,7 +17,7 @@ use NewfoldLabs\CustomPhp\Instrumentation\CustomPhpInstrumentation;
 // Ensure the OpenTelemetry extension is loaded
 if (!extension_loaded('opentelemetry')) {
     trigger_error(
-        'The opentelemetry extension must be loaded in order to autoload the OpenTelemetry WordPress auto-instrumentation',
+        'The opentelemetry extension must be loaded in order to autoload the OpenTelemetry CustomPhpInstrumentation auto-instrumentation',
         E_USER_WARNING
     );
     return;
