@@ -97,8 +97,8 @@ class SystemMetrics
 
         $metricsConfig = ConfigContext::get()->get('metrics', false);
 
-        if ($metricsConfig && isset($metricsConfig['helthcheck_uri'])) {
-            foreach ($metricsConfig['helthcheck_uri'] as $uri) {
+        if ($metricsConfig && isset($metricsConfig['healthcheck_uri'])) {
+            foreach ($metricsConfig['healthcheck_uri'] as $uri) {
                 if (strpos($currentUri, $uri) !== false) {
                     return true;
                 }
