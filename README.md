@@ -12,12 +12,9 @@ It is designed to work seamlessly with:
 
 ## 🚀 Installation
 
-**Step 1: Add minimum stability in your `composer.json`**
-```json
-"minimum-stability": "dev"
-```
 
-**Step 2: Add the custom repository**
+
+**Step 1: Add the custom repository**
 ```json
 "repositories": [
   {
@@ -27,7 +24,7 @@ It is designed to work seamlessly with:
 ]
 ```
 
-**Step 3: Require the package**
+**Step 2: Require the package**
 ```bash
 composer require newfold-labs/otel-php-instrumentation
 ```
