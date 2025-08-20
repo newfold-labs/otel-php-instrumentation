@@ -61,11 +61,27 @@ class TraceInstrumentation implements GenericInstrumentationInterface
     public static $rootSpan = null;
 
     /**
+     * Scope for the root span, used to manage context activation.
+     *
+     * @var \OpenTelemetry\Context\Scope|null
+     */
+    public static $rootSpanScope = null;
+
+    /**
      * Array to store current active spans keyed by hook identifier.
      *
      * @var array<string, \OpenTelemetry\API\Trace\SpanInterface>
      */
     public static array $currentSpans = [];
+
+    /**
+     * Array to store scopes for current active spans keyed by hook identifier.
+     *
+     * This allows managing the activation and deactivation of spans in a structured way.
+     *
+     * @var array<string, \OpenTelemetry\Context\Scope>
+     */
+    public static array $currentSpansScope = [];
 
     /**
      * Registers the instrumentation by creating a CachedInstrumentation instance.
@@ -124,7 +140,7 @@ class TraceInstrumentation implements GenericInstrumentationInterface
         $context = $span->storeInContext(Context::getCurrent());
         Context::storage()->attach($context);
 
-        $span->activate();
+        self::$rootSpanScope = $span->activate();
 
         self::$rootSpan = $span;
 
@@ -154,6 +170,8 @@ class TraceInstrumentation implements GenericInstrumentationInterface
             }
 
             self::$rootSpan->end();
+            self::$rootSpanScope->detach();
+            
         }
 
         $tracerProvider = Globals::tracerProvider();
@@ -180,7 +198,7 @@ class TraceInstrumentation implements GenericInstrumentationInterface
             ->setParent($parentContext)
             ->startSpan();
 
-        $span->activate();
+        $scope = $span->activate();
 
         $span->setAttribute(TraceAttributes::CODE_FILEPATH, $lastError['file'] ?? 'unknown')
             ->setAttribute(TraceAttributes::CODE_LINE_NUMBER, $lastError['line'] ?? -1)
@@ -193,6 +211,8 @@ class TraceInstrumentation implements GenericInstrumentationInterface
         ]);
 
         $span->end();
+        $scope->detach();
+    
     }
 
     /**
@@ -304,7 +324,7 @@ class TraceInstrumentation implements GenericInstrumentationInterface
                     ->setParent($parentContext)
                     ->startSpan();
 
-                $span->activate();
+                TraceInstrumentation::$currentSpansScope[$key] = $span->activate();
                 TraceInstrumentation::$currentSpans[$key] = $span;
 
                 $span->setAttribute(TraceAttributes::CODE_FUNCTION_NAME, $function)
@@ -328,7 +348,10 @@ class TraceInstrumentation implements GenericInstrumentationInterface
                 }
 
                 $span->end();
+                TraceInstrumentation::$currentSpansScope[$key]->detach();
                 unset(TraceInstrumentation::$currentSpans[$key]);
+                unset(TraceInstrumentation::$currentSpansScope[$key]);
+
             };
 
             hook(
